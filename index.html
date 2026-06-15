@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Fallas ALUMBRADO IMC - Mobile Full</title>
+<title>Fallas ALUMBRADO IMC - Full Responsive</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -11,41 +11,49 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-  body, html { height: 100%; margin: 0; padding: 0; background: #0f172a; color: #e2e8f0; overflow: hidden; }
+  body, html { height: 100%; margin: 0; padding: 0; background: #0f172a; color: #e2e8f0; overflow: hidden; font-family: system-ui, sans-serif; }
   
-  /* Colores Identidad */
   .text-alumbrado { color: #7cb342; } 
   .text-imc { color: #fbb005; }      
   
-  /* Sistema de Vistas Móvil */
-  .view-panel { position: absolute; inset: 0; display: none; flex-direction: column; background: #0f172a; padding-bottom: 70px; }
-  .view-panel.active { display: flex; }
+  /* Layout Base */
+  .app-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+  .main-content { flex: 1; display: flex; position: relative; overflow: hidden; }
   
-  #map { height: 100%; width: 100%; background: #1e293b; }
-
-  /* Barra de Navegación Inferior */
-  .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: #1e293b; border-top: 1px solid #334155; display: flex; z-index: 5000; }
-  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #94a3b8; border: none; background: none; }
-  .nav-btn.active { color: #fbb005; background: rgba(251, 176, 5, 0.05); border-top: 2px solid #fbb005; }
-  .nav-btn svg { width: 24px; height: 24px; margin-bottom: 4px; }
-
-  /* Modales Full Screen para Móvil */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); z-index: 6000; display: none; align-items: center; justify-content: center; padding: 15px; }
-  .modal-content { background: #1e293b; width: 100%; max-width: 600px; max-height: 90vh; border-radius: 20px; padding: 20px; overflow-y: auto; border: 1px solid #334155; }
-
-  /* Elementos UI */
+  #map { height: 100%; width: 100%; z-index: 1; background: #1e293b; }
   .glass { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); }
   .scroll-y { overflow-y: auto; -webkit-overflow-scrolling: touch; }
-  .btn-action { padding: 10px; border-radius: 12px; font-weight: bold; font-size: 11px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; justify-content: center; transition: 0.2s; }
-  
-  /* Leyendas */
-  .legend-float { position: absolute; bottom: 85px; left: 15px; z-index: 1001; }
-  .legend-content { display: none; background: rgba(15, 23, 42, 0.95); padding: 12px; border-radius: 15px; border: 1px solid #334155; font-size: 10px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-  .legend-content.active { display: block; }
-  .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; color: white; }
-  .legend-color { width: 10px; height: 10px; border-radius: 50%; border: 1px solid white; flex-shrink: 0; }
 
-  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 12px 20px; border-radius: 12px; background: #10b981; color: white; font-weight: bold; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+  /* Estilos PC (Desktop) */
+  @media (min-width: 1024px) {
+    .sidebar-left { width: 380px; border-right: 1px solid #334155; display: flex !important; }
+    .sidebar-right { width: 350px; border-left: 1px solid #334155; display: none; } /* Se muestra al seleccionar */
+    .mobile-nav { display: none !important; }
+    .view-panel { position: relative !important; display: flex !important; inset: auto !important; width: auto !important; height: auto !important; }
+    #map-container { flex: 1; position: relative; }
+  }
+
+  /* Estilos Móvil */
+  @media (max-width: 1023px) {
+    .sidebar-left, .sidebar-right, #map-container { position: absolute; inset: 0; display: none; padding-bottom: 75px; z-index: 10; background: #0f172a; }
+    .view-active { display: flex !important; flex-direction: column; }
+    .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: #1e293b; border-top: 1px solid #334155; display: flex; z-index: 5000; }
+    .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #94a3b8; }
+    .nav-btn.active { color: #fbb005; background: rgba(251, 176, 5, 0.05); border-top: 2px solid #fbb005; }
+  }
+
+  /* Modales y Otros */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 6000; display: none; align-items: center; justify-content: center; padding: 15px; }
+  .modal-content { background: #1e293b; width: 100%; max-width: 800px; max-height: 90vh; border-radius: 20px; padding: 20px; overflow-y: auto; border: 1px solid #334155; }
+  
+  .data-table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
+  .data-table th { background: rgba(59, 130, 246, 0.1); color: #94a3b8; padding: 10px; border-bottom: 1px solid #334155; }
+  .data-table td { padding: 8px 10px; border-bottom: 1px solid #334155; color: #cbd5e1; }
+
+  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 12px 24px; border-radius: 12px; background: #10b981; color: white; font-weight: bold; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+  
+  .error-item { transition: 0.2s; cursor: pointer; border-left: 4px solid transparent; }
+  .error-item:hover { background: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6; }
 </style>
 </head>
 <body>
@@ -53,147 +61,150 @@
 <!-- Pantalla de Login -->
 <div id="loginOverlay" class="fixed inset-0 z-[100000] bg-slate-900 flex items-center justify-center p-6">
     <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 w-full max-w-sm shadow-2xl text-center">
-        <div class="mb-8">
-            <h1 class="text-3xl font-black uppercase tracking-tighter">
-                <span class="text-alumbrado">ALUMBRADO</span> <span class="text-imc">IMC</span>
-            </h1>
-            <p class="text-slate-500 text-xs mt-1 font-bold uppercase tracking-widest">Gestión de Fallas</p>
-        </div>
+        <h1 class="text-3xl font-black uppercase tracking-tighter mb-1">
+            <span class="text-alumbrado">ALUMBRADO</span> <span class="text-imc">IMC</span>
+        </h1>
+        <p class="text-slate-500 text-sm mb-8 font-bold">CONTROL DE FALLAS</p>
         <form onsubmit="handleLogin(event)" class="space-y-4">
             <input type="text" id="username" placeholder="Usuario" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl text-white outline-none focus:border-lime-500">
             <input type="password" id="password" placeholder="Contraseña" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl text-white outline-none focus:border-lime-500">
             <button type="submit" class="w-full bg-blue-600 p-4 rounded-xl font-bold uppercase tracking-widest shadow-xl">Ingresar</button>
         </form>
-        <p id="loginError" class="text-red-500 text-xs mt-4 hidden font-bold">⚠️ Credenciales Incorrectas</p>
+        <p id="loginError" class="text-red-500 text-xs mt-4 hidden font-bold">⚠️ Credenciales incorrectas</p>
     </div>
 </div>
 
-<!-- Contenedor Principal App -->
+<!-- App Principal -->
 <div id="mainContent" class="hidden app-container">
     
-    <!-- Cabecera -->
+    <!-- Cabecera Responsiva -->
     <header class="glass border-b border-slate-700/50 px-4 py-3 flex items-center justify-between z-20">
-        <div>
-            <h1 class="text-sm font-black tracking-tighter">
+        <div class="flex items-center gap-2">
+            <h1 class="text-lg lg:text-2xl font-black tracking-tighter">
                 <span class="text-alumbrado">ALUMBRADO</span> <span class="text-imc">IMC</span>
             </h1>
+            <div class="hidden lg:block h-6 w-px bg-slate-700 mx-3"></div>
+            <p class="hidden lg:block text-[10px] text-slate-400 uppercase font-bold">SISTEMA INTEGRAL</p>
         </div>
-        <div class="flex gap-2">
-            <button id="btnAdmin" onclick="toggleModal('adminModal')" class="hidden bg-emerald-600/20 text-emerald-400 p-2 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg></button>
-            <button onclick="toggleModal('statsModal')" class="bg-indigo-600/20 text-indigo-400 p-2 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></button>
-            <button onclick="document.getElementById('fileInput').click()" class="bg-blue-600 p-2 rounded-lg text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg></button>
+        
+        <div class="flex items-center gap-2">
+            <button id="btnAdmin" onclick="toggleModal('adminModal')" class="hidden bg-emerald-600/20 text-emerald-400 px-3 py-2 rounded-lg text-[10px] font-bold uppercase border border-emerald-600/30">ADMIN</button>
+            <button onclick="toggleModal('statsModal')" class="bg-indigo-600/20 text-indigo-400 px-3 py-2 rounded-lg text-[10px] font-bold uppercase border border-indigo-600/30">ESTADÍSTICAS</button>
+            <button onclick="exportToPDF()" class="hidden lg:block bg-amber-600/20 text-amber-400 px-3 py-2 rounded-lg text-[10px] font-bold uppercase border border-amber-600/30">PDF</button>
+            <button onclick="document.getElementById('fileInput').click()" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-[10px] font-bold uppercase">CARGAR CSV</button>
+            <button onclick="logout()" class="bg-red-600 text-white px-3 py-2 rounded-lg text-[10px] font-bold uppercase">SALIR</button>
             <input type="file" id="fileInput" accept=".csv" class="hidden" onchange="handleFile(event)">
         </div>
     </header>
 
-    <div class="main-content flex-1 relative">
-        
-        <!-- VISTA 1: LISTADO Y FILTROS -->
-        <div id="view-list" class="view-panel active">
-            <!-- Estadísticas Rápidas -->
-            <div class="p-4 grid grid-cols-2 gap-2">
-                <div class="bg-slate-800 p-3 rounded-2xl border border-slate-700 text-center">
-                    <div class="text-[9px] text-slate-500 font-bold uppercase">Total Activos</div>
+    <div class="main-content">
+        <!-- BARRA LATERAL IZQUIERDA: Listado y Filtros -->
+        <aside id="sidebarLeft" class="sidebar-left view-active flex flex-col bg-slate-900/50">
+            <!-- Stats Rápidas -->
+            <div class="p-4 grid grid-cols-2 gap-2 border-b border-slate-800">
+                <div class="bg-slate-800 p-2 rounded-xl text-center border border-slate-700">
+                    <div class="text-[9px] text-slate-500 font-bold uppercase">Total</div>
                     <div id="statTotal" class="text-xl font-black">0</div>
                 </div>
-                <div class="bg-red-500/10 p-3 rounded-2xl border border-red-500/20 text-center">
+                <div class="bg-red-500/10 p-2 rounded-xl text-center border border-red-500/20">
                     <div class="text-[9px] text-red-400 font-bold uppercase">Sin Energía</div>
                     <div id="statNoEnergy" class="text-xl font-black text-red-500">0</div>
                 </div>
             </div>
 
             <!-- Panel de 5 Filtros -->
-            <div class="px-4 pb-4 space-y-2">
-                <input type="text" id="searchInput" placeholder="Buscar ID o External ID..." class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-sm outline-none">
-                
+            <div class="p-4 space-y-2 border-b border-slate-800 bg-slate-900/20">
+                <input type="text" id="searchInput" placeholder="Buscar ID..." class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-sm outline-none focus:border-blue-500">
                 <div class="grid grid-cols-2 gap-2">
-                    <select id="localidadFilter" class="bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">TODOS MUNICIPIOS</option></select>
-                    <select id="zonaFilter" class="bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">TODAS LAS ZONAS</option></select>
+                    <select id="localidadFilter" class="bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">MUNICIPIOS</option></select>
+                    <select id="zonaFilter" class="bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">ZONAS</option></select>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                    <select id="tipoFallaFilter" class="bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">TODAS LAS FALLAS</option></select>
-                    <select id="situacionFilter" class="bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">TODAS SITUACIONES</option></select>
+                    <select id="tipoFallaFilter" class="bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">FALLAS</option></select>
+                    <select id="situacionFilter" class="bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">SITUACIONES</option></select>
                 </div>
-                <select id="cuentaFilter" class="w-full bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">TODAS LAS CUENTAS</option></select>
+                <select id="cuentaFilter" class="w-full bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">CUENTAS</option></select>
             </div>
 
-            <div id="errorList" class="flex-1 scroll-y px-4 space-y-2">
-                <div class="text-center py-20 text-slate-600 font-bold uppercase text-xs">Cargue un CSV para empezar</div>
+            <!-- Listado -->
+            <div id="errorList" class="flex-1 scroll-y p-3 space-y-2">
+                <div class="text-center py-10 text-slate-600 font-bold text-xs">ESPERANDO DATOS...</div>
             </div>
-        </div>
+        </aside>
 
-        <!-- VISTA 2: MAPA -->
-        <div id="view-map" class="view-panel">
+        <!-- CONTENEDOR CENTRAL: Mapa -->
+        <main id="mapContainer" class="flex-1 relative">
             <div id="map"></div>
-            <!-- Botón Leyenda -->
-            <div class="legend-float">
-                <div id="legendBox" class="legend-content">
-                    <div class="font-bold border-b border-slate-700 pb-1 mb-2 uppercase text-blue-400">Leyenda</div>
-                    <div id="legendFallas"></div>
-                </div>
-                <button onclick="document.getElementById('legendBox').classList.toggle('active')" class="bg-slate-800 p-3 rounded-full border border-slate-600 shadow-2xl text-white">📋</button>
-            </div>
-        </div>
+        </main>
 
-        <!-- VISTA 3: DETALLE -->
-        <div id="view-detail" class="view-panel scroll-y p-6">
-            <div id="detailContent">
-                <div class="text-center py-20 text-slate-500 font-bold uppercase">Seleccione un activo</div>
+        <!-- BARRA LATERAL DERECHA: Detalle -->
+        <aside id="sidebarRight" class="sidebar-right glass flex flex-col p-6 scroll-y">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-bold text-xs uppercase tracking-widest">Detalle del Activo</h2>
+                <button onclick="closeDetail()" class="text-white text-xl lg:hidden">✕</button>
             </div>
-        </div>
+            <div id="detailContent" class="space-y-4">
+                <p class="text-slate-500 italic">Seleccione un activo para ver los detalles.</p>
+            </div>
+        </aside>
     </div>
 
-    <!-- Navegación Inferior -->
+    <!-- Navegación Móvil (Solo visible en celular) -->
     <nav class="mobile-nav">
-        <button onclick="changeTab('list')" id="nav-list" class="nav-btn active">
+        <button onclick="changeView('sidebarLeft')" id="nav-list" class="nav-btn active">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-            <span>LISTADO</span>
+            <span>LISTA</span>
         </button>
-        <button onclick="changeTab('map')" id="nav-map" class="nav-btn">
+        <button onclick="changeView('mapContainer')" id="nav-map" class="nav-btn">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             <span>MAPA</span>
         </button>
-        <button onclick="changeTab('detail')" id="nav-detail" class="nav-btn">
+        <button onclick="changeView('sidebarRight')" id="nav-detail" class="nav-btn">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <span>DETALLE</span>
         </button>
     </nav>
 </div>
 
-<!-- Modales -->
-<div id="adminModal" class="modal-overlay" onclick="closeModalOnSide(event)">
+<!-- Modal Usuarios -->
+<div id="adminModal" class="modal-overlay">
     <div class="modal-content">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold">👥 Administración</h2>
+            <h2 class="text-xl font-bold">👥 Administración de Usuarios</h2>
             <button onclick="toggleModal('adminModal')" class="text-2xl">✕</button>
         </div>
-        <div class="space-y-4">
-            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700 space-y-3">
-                <input type="text" id="newU" placeholder="Usuario" class="w-full bg-slate-800 p-2 rounded border border-slate-600 text-sm">
-                <input type="password" id="newP" placeholder="Clave" class="w-full bg-slate-800 p-2 rounded border border-slate-600 text-sm">
-                <button onclick="addUser()" class="w-full bg-emerald-600 p-2 rounded font-bold text-xs uppercase">Crear Usuario</button>
+        <div class="space-y-6">
+            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <input type="text" id="newU" placeholder="Usuario" class="bg-slate-800 p-2 rounded border border-slate-600 text-sm">
+                <input type="password" id="newP" placeholder="Clave" class="bg-slate-800 p-2 rounded border border-slate-600 text-sm">
+                <button onclick="addUser()" class="bg-emerald-600 p-2 rounded font-bold text-xs uppercase">Crear</button>
             </div>
-            <table class="data-table w-full text-xs">
-                <thead><tr class="text-slate-500 border-b border-slate-700"><th>Usuario</th><th>Acción</th></tr></thead>
-                <tbody id="userList"></tbody>
+            <table class="data-table w-full">
+                <thead><tr><th>Usuario</th><th>Rol</th><th>Acción</th></tr></thead>
+                <tbody id="userListTable"></tbody>
             </table>
         </div>
     </div>
 </div>
 
-<div id="statsModal" class="modal-overlay" onclick="closeModalOnSide(event)">
+<!-- Modal Estadísticas -->
+<div id="statsModal" class="modal-overlay">
     <div class="modal-content">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold">📊 Estadísticas</h2>
+        <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+            <h2 class="text-xl font-bold">📊 Estadísticas y Reportes</h2>
             <button onclick="toggleModal('statsModal')" class="text-2xl">✕</button>
         </div>
-        <div class="space-y-4">
-            <button onclick="exportToPDF()" class="w-full bg-amber-600 p-3 rounded-xl font-bold text-xs uppercase shadow-lg">Descargar Listado PDF 📄</button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
-                <h3 class="text-[10px] font-bold text-slate-500 uppercase mb-3">Ranking Municipios</h3>
-                <div class="overflow-x-auto"><table class="w-full text-xs text-left"><tbody id="statsTable"></tbody></table></div>
+                <h3 class="text-xs font-bold text-slate-500 uppercase mb-4">Municipios con más Fallas</h3>
+                <div class="overflow-x-auto"><table class="data-table w-full"><tbody id="munStatsTable"></tbody></table></div>
             </div>
-            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700"><canvas id="chartFallas"></canvas></div>
+            <div class="space-y-4">
+                <button onclick="exportToPDF()" class="w-full bg-amber-600 p-4 rounded-xl font-bold uppercase text-xs shadow-lg">Descargar Reporte PDF 📄</button>
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
+                    <canvas id="chartFallas"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -201,7 +212,7 @@
 <div id="toastContainer"></div>
 
 <script>
-// --- CORE CONFIG ---
+// --- CONFIG Y ESTADO ---
 let users = JSON.parse(localStorage.getItem('imc_users')) || [{ name: 'admin', pass: 'admin123', role: 'admin' }];
 let allData = [];
 let filteredData = [];
@@ -221,9 +232,9 @@ function handleLogin(e) {
     e.preventDefault();
     const u = document.getElementById('username').value.trim().toLowerCase();
     const p = document.getElementById('password').value.trim();
-    const user = users.find(x => x.name === u && x.pass === p);
+    const user = users.find(x => x.name.toLowerCase() === u && x.pass === p);
     if(user) {
-        sessionStorage.setItem('imc_user', JSON.stringify(user));
+        sessionStorage.setItem('imc_logged', JSON.stringify(user));
         enterApp(user);
     } else {
         document.getElementById('loginError').classList.remove('hidden');
@@ -235,40 +246,59 @@ function enterApp(user) {
     document.getElementById('mainContent').classList.remove('hidden');
     if(user.role === 'admin') document.getElementById('btnAdmin').classList.remove('hidden');
     renderUserTable();
-    setTimeout(initMap, 300);
+    setTimeout(() => {
+        initMap();
+        if(map) map.invalidateSize();
+    }, 300);
 }
 
 function logout() { sessionStorage.clear(); location.reload(); }
 
-// --- UI TABS ---
-function changeTab(tab) {
-    document.querySelectorAll('.view-panel').forEach(v => v.classList.remove('active'));
+// --- NAVEGACIÓN MÓVIL ---
+function changeView(viewId) {
+    document.getElementById('sidebarLeft').classList.remove('view-active');
+    document.getElementById('mapContainer').classList.remove('view-active');
+    document.getElementById('sidebarRight').classList.remove('view-active');
+    
+    document.getElementById(viewId).classList.add('view-active');
+    
+    // Actualizar botones Nav
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('view-' + tab).classList.add('active');
-    document.getElementById('nav-' + tab).classList.add('active');
-    if(tab === 'map' && map) setTimeout(() => map.invalidateSize(), 200);
+    if(viewId === 'sidebarLeft') document.getElementById('nav-list').classList.add('active');
+    if(viewId === 'mapContainer') {
+        document.getElementById('nav-map').classList.add('active');
+        setTimeout(() => map.invalidateSize(), 100);
+    }
+    if(viewId === 'sidebarRight') document.getElementById('nav-detail').classList.add('active');
 }
 
-function toggleModal(id) {
-    const m = document.getElementById(id);
-    m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
-    if(id === 'statsModal') updateStats();
+function closeDetail() { 
+    if(window.innerWidth < 1024) changeView('sidebarLeft');
+    else document.getElementById('sidebarRight').style.display = 'none';
 }
-
-function closeModalOnSide(e) { if(e.target.className === 'modal-overlay') e.target.style.display = 'none'; }
 
 // --- MAPA ---
 function initMap() {
     if(map) return;
     map = L.map('map', { zoomControl: false }).setView([-34.75, -56.0], 10);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    
-    document.getElementById('legendFallas').innerHTML = Object.entries(FALLA_TYPES).map(([n, c]) => `
-        <div class="legend-item"><span class="legend-color" style="background:${c}"></span>${n}</div>
-    `).join('');
 }
 
-// --- DATOS ---
+function renderMarkers() {
+    markers.forEach(m => map.removeLayer(m)); markers = [];
+    const bounds = [];
+    filteredData.forEach(d => {
+        if(!isNaN(d.lat)) {
+            const m = L.circleMarker([d.lat, d.lng], { radius: 8, fillColor: d.cat.c, color: '#fff', weight: 1, fillOpacity: 0.9 }).addTo(map);
+            m.on('click', () => selectAsset(d.id));
+            markers.push(m);
+            bounds.push([d.lat, d.lng]);
+        }
+    });
+    if(bounds.length > 0) map.fitBounds(bounds, { padding: [30, 30] });
+}
+
+// --- PROCESAMIENTO DE DATOS ---
 function handleFile(e) {
     const file = e.target.files[0];
     if(!file) return;
@@ -299,7 +329,7 @@ function handleFile(e) {
         filteredData = [...allData];
         populateFilters();
         applyFilters();
-        showToast("CSV CARGADO ✅");
+        showToast("PLANILLA CARGADA ✅");
     };
     r.readAsText(file);
 }
@@ -323,30 +353,14 @@ function applyFilters() {
 
     document.getElementById('statTotal').innerText = filteredData.length;
     document.getElementById('statNoEnergy').innerText = filteredData.filter(x => x.cat.n === 'Sin energía').length;
-    
     renderMarkers();
     renderList();
-}
-
-function renderMarkers() {
-    if(!map) return;
-    markers.forEach(m => map.removeLayer(m)); markers = [];
-    const bounds = [];
-    filteredData.forEach(d => {
-        if(!isNaN(d.lat)) {
-            const m = L.circleMarker([d.lat, d.lng], { radius: 8, fillColor: d.cat.c, color: '#fff', weight: 1, fillOpacity: 0.9 }).addTo(map);
-            m.on('click', () => { selectAsset(d.id); changeTab('detail'); });
-            markers.push(m);
-            bounds.push([d.lat, d.lng]);
-        }
-    });
-    if(bounds.length > 0) map.fitBounds(bounds, { padding: [20, 20] });
 }
 
 function renderList() {
     const c = document.getElementById('errorList');
     c.innerHTML = filteredData.slice(0, 100).map(d => `
-        <div class="p-4 bg-slate-800 rounded-2xl border border-slate-700 shadow-lg" onclick="selectAsset('${d.id}'); changeTab('detail');">
+        <div class="p-4 bg-slate-800 rounded-2xl border border-slate-700 shadow-lg mb-2 error-item" onclick="selectAsset('${d.id}')">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-[9px] font-bold text-blue-400 uppercase bg-blue-400/10 px-2 py-0.5 rounded-full">${d.loc}</span>
                 <span class="text-[9px] text-slate-500">${d.date.split(' ')[0]}</span>
@@ -360,13 +374,14 @@ function renderList() {
 function selectAsset(id) {
     const d = allData.find(x => x.id === id);
     if(!d) return;
-    document.getElementById('detailContent').innerHTML = `
-        <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700 space-y-5">
-            <div>
-                <div class="text-[10px] text-slate-500 font-bold uppercase mb-1">Activo</div>
-                <div class="text-2xl font-black text-white">${d.ext}</div>
+    
+    const content = `
+        <div class="bg-slate-800 p-5 rounded-3xl border border-slate-700 space-y-5 shadow-2xl">
+            <div class="bg-blue-600/10 p-4 rounded-2xl border border-blue-600/20">
+                <div class="text-[10px] text-blue-400 font-bold uppercase mb-1">Activo / ID</div>
+                <div class="text-xl font-black text-white">${d.ext}</div>
             </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-3">
                 <div class="bg-slate-900/50 p-3 rounded-xl">
                     <div class="text-[9px] text-slate-500 uppercase font-bold">Municipio</div>
                     <div class="text-xs text-white">${d.loc}</div>
@@ -377,30 +392,41 @@ function selectAsset(id) {
                 </div>
             </div>
             <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
-                <div class="text-[9px] text-slate-500 uppercase font-bold mb-1">Estado Detectado</div>
-                <div class="font-bold text-sm" style="color:${d.cat.c}">${d.cat.n}</div>
-                <div class="text-[10px] text-slate-400 mt-2 italic">${d.msg}</div>
+                <div class="text-[9px] text-slate-500 uppercase font-bold mb-1">Situación Actual</div>
+                <div class="text-lime-400 font-black uppercase text-sm">${d.sit}</div>
+                <div class="text-[9px] text-slate-400 mt-2 font-mono">Cuenta: ${d.cue}</div>
             </div>
-            <div class="flex justify-between items-center bg-lime-500/10 p-4 rounded-xl border border-lime-500/20">
-                <div>
-                    <div class="text-[9px] text-lime-500 uppercase font-bold">Situación</div>
-                    <div class="text-xs text-lime-400 font-black uppercase">${d.sit}</div>
-                </div>
-                <div class="text-right">
-                    <div class="text-[9px] text-slate-500 uppercase font-bold">Nº Cuenta</div>
-                    <div class="text-xs text-white font-mono">${d.cue}</div>
-                </div>
+            <div class="p-4 rounded-xl" style="background:${d.cat.c}15; border:1px solid ${d.cat.c}30">
+                <div class="text-[9px] uppercase font-bold" style="color:${d.cat.c}">Falla</div>
+                <div class="font-bold text-white">${d.cat.n}</div>
             </div>
-            <button onclick="changeTab('map'); map.flyTo([${d.lat}, ${d.lng}], 18);" class="w-full bg-blue-600 p-4 rounded-2xl font-bold shadow-xl">📍 VER EN MAPA</button>
+            <button onclick="irAMapa(${d.lat}, ${d.lng})" class="w-full bg-blue-600 p-4 rounded-2xl font-bold shadow-xl">VER EN MAPA 📍</button>
         </div>
     `;
+
+    document.getElementById('detailContent').innerHTML = content;
+    
+    if(window.innerWidth < 1024) changeView('sidebarRight');
+    else document.getElementById('sidebarRight').style.display = 'flex';
+}
+
+function irAMapa(lat, lng) {
+    if(window.innerWidth < 1024) changeView('mapContainer');
+    setTimeout(() => map.flyTo([lat, lng], 18), 300);
+}
+
+// --- HELPERS ---
+function toggleModal(id) { 
+    const m = document.getElementById(id);
+    m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+    if(id === 'statsModal') updateStats();
 }
 
 function populateFilters() {
     const getU = (f) => [...new Set(allData.map(d => d[f]))].filter(x => x && x !== '-').sort();
     const fill = (id, list, label) => {
         const sel = document.getElementById(id);
-        sel.innerHTML = `<option value="all">TODO (${label})</option>` + list.map(x => `<option value="${x}">${x}</option>`).join('');
+        sel.innerHTML = `<option value="all">${label}</option>` + list.map(x => `<option value="${x}">${x}</option>`).join('');
     };
     fill('localidadFilter', getU('loc'), 'MUNICIPIOS');
     fill('zonaFilter', getU('zona'), 'ZONAS');
@@ -409,7 +435,16 @@ function populateFilters() {
     fill('cuentaFilter', getU('cue'), 'CUENTAS');
 }
 
-// --- ADMIN USUARIOS ---
+function renderUserTable() {
+    document.getElementById('userListTable').innerHTML = users.map(u => `
+        <tr class="border-b border-slate-800">
+            <td class="py-2">${u.name}</td>
+            <td class="text-blue-400 text-[10px] uppercase font-bold">${u.role}</td>
+            <td class="text-right"><button onclick="delU('${u.name}')" class="text-red-500">Borrar</button></td>
+        </tr>
+    `).join('');
+}
+
 function addUser() {
     const n = document.getElementById('newU').value.trim();
     const p = document.getElementById('newP').value.trim();
@@ -419,26 +454,21 @@ function addUser() {
     renderUserTable();
     document.getElementById('newU').value=''; document.getElementById('newP').value='';
 }
-function renderUserTable() {
-    document.getElementById('userList').innerHTML = users.map(u => `
-        <tr class="border-b border-slate-800"><td class="py-2">${u.name}</td><td class="text-right"><button onclick="delU('${u.name}')" class="text-red-500">Borrar</button></td></tr>
-    `).join('');
-}
+
 function delU(n) { if(n==='admin') return; users=users.filter(x=>x.name!==n); localStorage.setItem('imc_users', JSON.stringify(users)); renderUserTable(); }
 
-// --- PDF Y STATS ---
 function exportToPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('l');
-    doc.text("REPORTE DE FALLAS IMC", 14, 15);
+    doc.text("REPORTE DE FALLAS ALUMBRADO IMC", 14, 15);
     const rows = filteredData.map((d, i) => [i+1, d.ext, d.loc, d.cat.n, d.sit, d.cue]);
     doc.autoTable({ head: [['#', 'ID', 'Municipio', 'Falla', 'Situación', 'Cuenta']], body: rows, startY: 20, styles: {fontSize:7} });
-    doc.save("Fallas_Alumbrado.pdf");
+    doc.save("Reporte_Fallas.pdf");
 }
 
 function updateStats() {
     const mun = {}; filteredData.forEach(d => mun[d.loc] = (mun[d.loc] || 0) + 1);
-    document.getElementById('statsTable').innerHTML = Object.entries(mun).sort((a,b)=>b[1]-a[1]).map(([l, c]) => `
+    document.getElementById('munStatsTable').innerHTML = Object.entries(mun).sort((a,b)=>b[1]-a[1]).map(([l, c]) => `
         <tr class="border-b border-slate-800"><td class="py-2">${l}</td><td class="text-right font-bold text-blue-400">${c}</td></tr>
     `).join('');
 }
@@ -456,9 +486,9 @@ document.getElementById('tipoFallaFilter').addEventListener('change', applyFilte
 document.getElementById('situacionFilter').addEventListener('change', applyFilters);
 document.getElementById('cuentaFilter').addEventListener('change', applyFilters);
 
-window.onload = () => {
-    const s = sessionStorage.getItem('imc_user');
-    if(s) enterApp(JSON.parse(s));
+window.onload = () => { 
+    const s = sessionStorage.getItem('imc_logged'); 
+    if(s) enterApp(JSON.parse(s)); 
 };
 </script>
 </body>
