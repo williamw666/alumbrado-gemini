@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Fallas ALUMBRADO IMC - Full Responsive</title>
+<title>Fallas ALUMBRADO IMC - Professional Hybrid</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -20,199 +20,193 @@
   .app-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
   .main-content { flex: 1; display: flex; position: relative; overflow: hidden; }
   
-  #map { height: 100%; width: 100%; z-index: 1; background: #1e293b; }
+  #map { height: 100%; width: 100%; background: #1e293b; }
   .glass { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); }
-  .scroll-y { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .scroll-y { overflow-y: auto; scrollbar-width: thin; scrollbar-color: #475569 transparent; }
 
-  /* Estilos PC (Desktop) */
+  /* --- MODO ESCRITORIO (PC) --- */
   @media (min-width: 1024px) {
     .sidebar-left { width: 380px; border-right: 1px solid #334155; display: flex !important; }
-    .sidebar-right { width: 350px; border-left: 1px solid #334155; display: none; } /* Se muestra al seleccionar */
+    #map-container { flex: 1; position: relative; display: block !important; }
+    .sidebar-right { width: 350px; border-left: 1px solid #334155; display: none; } /* Aparece al seleccionar */
     .mobile-nav { display: none !important; }
-    .view-panel { position: relative !important; display: flex !important; inset: auto !important; width: auto !important; height: auto !important; }
-    #map-container { flex: 1; position: relative; }
+    .legend-situacion { display: block !important; }
   }
 
-  /* Estilos Móvil */
+  /* --- MODO MÓVIL (Celular) --- */
   @media (max-width: 1023px) {
-    .sidebar-left, .sidebar-right, #map-container { position: absolute; inset: 0; display: none; padding-bottom: 75px; z-index: 10; background: #0f172a; }
+    .sidebar-left, .sidebar-right, #map-container { 
+        position: absolute; inset: 0; display: none; padding-bottom: 70px; z-index: 10; background: #0f172a; 
+    }
     .view-active { display: flex !important; flex-direction: column; }
     .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: #1e293b; border-top: 1px solid #334155; display: flex; z-index: 5000; }
     .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #94a3b8; }
-    .nav-btn.active { color: #fbb005; background: rgba(251, 176, 5, 0.05); border-top: 2px solid #fbb005; }
+    .nav-btn.active { color: #fbb005; background: rgba(251, 176, 5, 0.05); }
+    .legend-situacion { display: none; } /* Se oculta en movil para no tapar */
   }
 
-  /* Modales y Otros */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 6000; display: none; align-items: center; justify-content: center; padding: 15px; }
-  .modal-content { background: #1e293b; width: 100%; max-width: 800px; max-height: 90vh; border-radius: 20px; padding: 20px; overflow-y: auto; border: 1px solid #334155; }
-  
-  .data-table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
-  .data-table th { background: rgba(59, 130, 246, 0.1); color: #94a3b8; padding: 10px; border-bottom: 1px solid #334155; }
-  .data-table td { padding: 8px 10px; border-bottom: 1px solid #334155; color: #cbd5e1; }
+  /* Leyendas */
+  .legend-box { position: absolute; z-index: 1000; background: rgba(15, 23, 42, 0.95); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; pointer-events: none; }
+  .legend-falla { bottom: 85px; left: 15px; }
+  .legend-situacion { bottom: 85px; right: 15px; max-width: 180px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .legend-color { width: 10px; height: 10px; border-radius: 50%; border: 1px solid white; flex-shrink: 0; }
 
-  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 12px 24px; border-radius: 12px; background: #10b981; color: white; font-weight: bold; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+  /* Botones y Modales */
+  .btn-header { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: bold; text-transform: uppercase; transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 6000; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal-content { background: #1e293b; width: 100%; max-width: 900px; max-height: 90vh; border-radius: 20px; padding: 25px; overflow-y: auto; border: 1px solid #334155; }
   
-  .error-item { transition: 0.2s; cursor: pointer; border-left: 4px solid transparent; }
+  .error-item { border-left: 4px solid transparent; transition: 0.2s; }
   .error-item:hover { background: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6; }
 </style>
 </head>
 <body>
 
-<!-- Pantalla de Login -->
-<div id="loginOverlay" class="fixed inset-0 z-[100000] bg-slate-900 flex items-center justify-center p-6">
-    <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 w-full max-w-sm shadow-2xl text-center">
+<!-- Login -->
+<div id="loginOverlay" class="fixed inset-0 z-[100000] bg-slate-900 flex items-center justify-center p-6 text-center">
+    <div class="bg-slate-800 p-10 rounded-3xl border border-slate-700 w-full max-w-sm shadow-2xl">
         <h1 class="text-3xl font-black uppercase tracking-tighter mb-1">
             <span class="text-alumbrado">ALUMBRADO</span> <span class="text-imc">IMC</span>
         </h1>
-        <p class="text-slate-500 text-sm mb-8 font-bold">CONTROL DE FALLAS</p>
+        <p class="text-slate-500 text-xs font-bold uppercase mb-8">Gestión de Infraestructura</p>
         <form onsubmit="handleLogin(event)" class="space-y-4">
             <input type="text" id="username" placeholder="Usuario" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl text-white outline-none focus:border-lime-500">
             <input type="password" id="password" placeholder="Contraseña" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl text-white outline-none focus:border-lime-500">
-            <button type="submit" class="w-full bg-blue-600 p-4 rounded-xl font-bold uppercase tracking-widest shadow-xl">Ingresar</button>
+            <button type="submit" class="w-full bg-blue-600 p-4 rounded-xl font-bold uppercase shadow-xl hover:bg-blue-500">Ingresar</button>
         </form>
-        <p id="loginError" class="text-red-500 text-xs mt-4 hidden font-bold">⚠️ Credenciales incorrectas</p>
+        <p id="loginError" class="text-red-500 text-xs mt-4 hidden">⚠️ Error de acceso</p>
     </div>
 </div>
 
 <!-- App Principal -->
 <div id="mainContent" class="hidden app-container">
     
-    <!-- Cabecera Responsiva -->
-    <header class="glass border-b border-slate-700/50 px-4 py-3 flex items-center justify-between z-20">
+    <!-- Cabecera Completa -->
+    <header class="glass border-b border-slate-700/50 px-4 lg:px-6 py-3 flex items-center justify-between z-20">
         <div class="flex items-center gap-2">
             <h1 class="text-lg lg:text-2xl font-black tracking-tighter">
                 <span class="text-alumbrado">ALUMBRADO</span> <span class="text-imc">IMC</span>
             </h1>
-            <div class="hidden lg:block h-6 w-px bg-slate-700 mx-3"></div>
-            <p class="hidden lg:block text-[10px] text-slate-400 uppercase font-bold">SISTEMA INTEGRAL</p>
         </div>
         
-        <div class="flex items-center gap-2">
-            <button id="btnAdmin" onclick="toggleModal('adminModal')" class="hidden bg-emerald-600/20 text-emerald-400 px-3 py-2 rounded-lg text-[10px] font-bold uppercase border border-emerald-600/30">ADMIN</button>
-            <button onclick="toggleModal('statsModal')" class="bg-indigo-600/20 text-indigo-400 px-3 py-2 rounded-lg text-[10px] font-bold uppercase border border-indigo-600/30">ESTADÍSTICAS</button>
-            <button onclick="exportToPDF()" class="hidden lg:block bg-amber-600/20 text-amber-400 px-3 py-2 rounded-lg text-[10px] font-bold uppercase border border-amber-600/30">PDF</button>
-            <button onclick="document.getElementById('fileInput').click()" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-[10px] font-bold uppercase">CARGAR CSV</button>
-            <button onclick="logout()" class="bg-red-600 text-white px-3 py-2 rounded-lg text-[10px] font-bold uppercase">SALIR</button>
+        <div class="flex items-center gap-1.5 lg:gap-3">
+            <button id="btnAdmin" onclick="toggleModal('adminModal')" class="btn-header bg-emerald-600/20 text-emerald-400 hidden">Admin</button>
+            <button onclick="toggleModal('statsModal')" class="btn-header bg-indigo-600/20 text-indigo-400">Stats</button>
+            <button onclick="exportToPDF()" class="btn-header bg-amber-600/20 text-amber-400 hidden lg:block">PDF</button>
+            <button onclick="document.getElementById('fileInput').click()" class="btn-header bg-blue-600 text-white">Cargar</button>
+            <button onclick="logout()" class="btn-header bg-red-600/20 text-red-500">Salir</button>
             <input type="file" id="fileInput" accept=".csv" class="hidden" onchange="handleFile(event)">
         </div>
     </header>
 
     <div class="main-content">
-        <!-- BARRA LATERAL IZQUIERDA: Listado y Filtros -->
+        <!-- IZQUIERDA: Lista y Todos los Filtros -->
         <aside id="sidebarLeft" class="sidebar-left view-active flex flex-col bg-slate-900/50">
-            <!-- Stats Rápidas -->
             <div class="p-4 grid grid-cols-2 gap-2 border-b border-slate-800">
                 <div class="bg-slate-800 p-2 rounded-xl text-center border border-slate-700">
-                    <div class="text-[9px] text-slate-500 font-bold uppercase">Total</div>
+                    <div class="text-[8px] text-slate-500 font-bold uppercase">Total</div>
                     <div id="statTotal" class="text-xl font-black">0</div>
                 </div>
                 <div class="bg-red-500/10 p-2 rounded-xl text-center border border-red-500/20">
-                    <div class="text-[9px] text-red-400 font-bold uppercase">Sin Energía</div>
+                    <div class="text-[8px] text-red-400 font-bold uppercase">Sin Energía</div>
                     <div id="statNoEnergy" class="text-xl font-black text-red-500">0</div>
                 </div>
             </div>
 
-            <!-- Panel de 5 Filtros -->
+            <!-- TODOS LOS FILTROS RECUPERADOS -->
             <div class="p-4 space-y-2 border-b border-slate-800 bg-slate-900/20">
-                <input type="text" id="searchInput" placeholder="Buscar ID..." class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-sm outline-none focus:border-blue-500">
+                <input type="text" id="searchInput" placeholder="Buscar por ID..." class="w-full bg-slate-800 border border-slate-700 p-2.5 rounded-lg text-sm text-white outline-none">
                 <div class="grid grid-cols-2 gap-2">
-                    <select id="localidadFilter" class="bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">MUNICIPIOS</option></select>
-                    <select id="zonaFilter" class="bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">ZONAS</option></select>
+                    <select id="localidadFilter" class="bg-slate-800 border border-slate-700 p-2 rounded text-[10px]"><option value="all">MUNICIPIO</option></select>
+                    <select id="zonaFilter" class="bg-slate-800 border border-slate-700 p-2 rounded text-[10px]"><option value="all">ZONA</option></select>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                    <select id="tipoFallaFilter" class="bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">FALLAS</option></select>
-                    <select id="situacionFilter" class="bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">SITUACIONES</option></select>
+                    <select id="tipoFallaFilter" class="bg-slate-800 border border-slate-700 p-2 rounded text-[10px]"><option value="all">TIPOS DE FALLAS</option></select>
+                    <select id="situacionFilter" class="bg-slate-800 border border-slate-700 p-2 rounded text-[10px]"><option value="all">SITUACIÓN</option></select>
                 </div>
-                <select id="cuentaFilter" class="w-full bg-slate-800 border border-slate-700 p-2 rounded-lg text-[10px]"><option value="all">CUENTAS</option></select>
+                <select id="cuentaFilter" class="w-full bg-slate-800 border border-slate-700 p-2 rounded text-[10px]"><option value="all">Nº CUENTA</option></select>
             </div>
 
-            <!-- Listado -->
-            <div id="errorList" class="flex-1 scroll-y p-3 space-y-2">
-                <div class="text-center py-10 text-slate-600 font-bold text-xs">ESPERANDO DATOS...</div>
+            <div id="errorList" class="flex-1 scroll-y p-2 space-y-2">
+                <div class="text-center py-10 text-slate-600 text-xs">Cargue un CSV para comenzar.</div>
             </div>
         </aside>
 
-        <!-- CONTENEDOR CENTRAL: Mapa -->
+        <!-- CENTRO: Mapa -->
         <main id="mapContainer" class="flex-1 relative">
             <div id="map"></div>
+            <!-- Leyendas -->
+            <div class="legend-box legend-falla" id="legendFallas"></div>
+            <div class="legend-box legend-situacion" id="legendSituaciones"></div>
         </main>
 
-        <!-- BARRA LATERAL DERECHA: Detalle -->
+        <!-- DERECHA: Detalle -->
         <aside id="sidebarRight" class="sidebar-right glass flex flex-col p-6 scroll-y">
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
                 <h2 class="font-bold text-xs uppercase tracking-widest">Detalle del Activo</h2>
-                <button onclick="closeDetail()" class="text-white text-xl lg:hidden">✕</button>
+                <button onclick="closeDetail()" class="text-white text-xl">✕</button>
             </div>
-            <div id="detailContent" class="space-y-4">
-                <p class="text-slate-500 italic">Seleccione un activo para ver los detalles.</p>
-            </div>
+            <div id="detailContent" class="space-y-4"></div>
         </aside>
     </div>
 
-    <!-- Navegación Móvil (Solo visible en celular) -->
+    <!-- Navegación Móvil Inferior -->
     <nav class="mobile-nav">
         <button onclick="changeView('sidebarLeft')" id="nav-list" class="nav-btn active">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
             <span>LISTA</span>
         </button>
         <button onclick="changeView('mapContainer')" id="nav-map" class="nav-btn">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             <span>MAPA</span>
         </button>
         <button onclick="changeView('sidebarRight')" id="nav-detail" class="nav-btn">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <span>DETALLE</span>
         </button>
     </nav>
 </div>
 
-<!-- Modal Usuarios -->
+<!-- Modales (Admin/Stats) -->
 <div id="adminModal" class="modal-overlay">
     <div class="modal-content">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold">👥 Administración de Usuarios</h2>
-            <button onclick="toggleModal('adminModal')" class="text-2xl">✕</button>
+        <h2 class="text-xl font-bold mb-6">👥 Usuarios</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 bg-slate-900/50 p-4 rounded-xl">
+            <input type="text" id="newU" placeholder="Nombre" class="bg-slate-800 p-2 rounded text-sm text-white">
+            <input type="password" id="newP" placeholder="Clave" class="bg-slate-800 p-2 rounded text-sm text-white">
+            <button onclick="addUser()" class="bg-emerald-600 rounded font-bold text-xs uppercase">Crear</button>
         </div>
-        <div class="space-y-6">
-            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <input type="text" id="newU" placeholder="Usuario" class="bg-slate-800 p-2 rounded border border-slate-600 text-sm">
-                <input type="password" id="newP" placeholder="Clave" class="bg-slate-800 p-2 rounded border border-slate-600 text-sm">
-                <button onclick="addUser()" class="bg-emerald-600 p-2 rounded font-bold text-xs uppercase">Crear</button>
-            </div>
-            <table class="data-table w-full">
-                <thead><tr><th>Usuario</th><th>Rol</th><th>Acción</th></tr></thead>
-                <tbody id="userListTable"></tbody>
-            </table>
-        </div>
+        <table class="data-table w-full">
+            <thead><tr><th>Usuario</th><th>Rol</th><th>Borrar</th></tr></thead>
+            <tbody id="userListTable"></tbody>
+        </table>
+        <button onclick="toggleModal('adminModal')" class="mt-6 text-blue-400">Cerrar</button>
     </div>
 </div>
 
-<!-- Modal Estadísticas -->
 <div id="statsModal" class="modal-overlay">
     <div class="modal-content">
-        <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
-            <h2 class="text-xl font-bold">📊 Estadísticas y Reportes</h2>
-            <button onclick="toggleModal('statsModal')" class="text-2xl">✕</button>
-        </div>
+        <h2 class="text-xl font-bold mb-6">📊 Estadísticas</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
-                <h3 class="text-xs font-bold text-slate-500 uppercase mb-4">Municipios con más Fallas</h3>
-                <div class="overflow-x-auto"><table class="data-table w-full"><tbody id="munStatsTable"></tbody></table></div>
+                <table class="data-table w-full"><thead id="statsHead"></thead><tbody id="munStatsTable"></tbody></table>
             </div>
-            <div class="space-y-4">
-                <button onclick="exportToPDF()" class="w-full bg-amber-600 p-4 rounded-xl font-bold uppercase text-xs shadow-lg">Descargar Reporte PDF 📄</button>
-                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
-                    <canvas id="chartFallas"></canvas>
-                </div>
+            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
+                <canvas id="chartFallas"></canvas>
+            </div>
+            <div class="md:col-span-2">
+                <table class="data-table w-full"><thead><tr><th>Cuenta</th><th>Activos</th><th>Acción</th></tr></thead><tbody id="groupedCuentasTable"></tbody></table>
             </div>
         </div>
+        <button onclick="toggleModal('statsModal')" class="mt-6 text-blue-400">Cerrar</button>
     </div>
 </div>
 
 <div id="toastContainer"></div>
 
 <script>
-// --- CONFIG Y ESTADO ---
+// --- CONFIGURACIÓN ---
 let users = JSON.parse(localStorage.getItem('imc_users')) || [{ name: 'admin', pass: 'admin123', role: 'admin' }];
 let allData = [];
 let filteredData = [];
@@ -224,6 +218,9 @@ const FALLA_TYPES = {
     'OLC inaccesible': '#f97316',
     'Equipo dañado': '#dc2626',
     'GPS roto': '#eab308',
+    'Voltaje/Corriente': '#a855f7',
+    'Driver/Relé': '#ec4899',
+    'Error configuración': '#10b981',
     'Otros': '#64748b'
 };
 
@@ -234,71 +231,34 @@ function handleLogin(e) {
     const p = document.getElementById('password').value.trim();
     const user = users.find(x => x.name.toLowerCase() === u && x.pass === p);
     if(user) {
-        sessionStorage.setItem('imc_logged', JSON.stringify(user));
+        sessionStorage.setItem('imc_session', JSON.stringify(user));
         enterApp(user);
     } else {
         document.getElementById('loginError').classList.remove('hidden');
     }
 }
-
 function enterApp(user) {
     document.getElementById('loginOverlay').style.display = 'none';
     document.getElementById('mainContent').classList.remove('hidden');
+    document.getElementById('headerUser').textContent = user.name;
     if(user.role === 'admin') document.getElementById('btnAdmin').classList.remove('hidden');
-    renderUserTable();
-    setTimeout(() => {
-        initMap();
-        if(map) map.invalidateSize();
-    }, 300);
+    setTimeout(() => { initMap(); map.invalidateSize(); }, 300);
 }
-
 function logout() { sessionStorage.clear(); location.reload(); }
-
-// --- NAVEGACIÓN MÓVIL ---
-function changeView(viewId) {
-    document.getElementById('sidebarLeft').classList.remove('view-active');
-    document.getElementById('mapContainer').classList.remove('view-active');
-    document.getElementById('sidebarRight').classList.remove('view-active');
-    
-    document.getElementById(viewId).classList.add('view-active');
-    
-    // Actualizar botones Nav
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    if(viewId === 'sidebarLeft') document.getElementById('nav-list').classList.add('active');
-    if(viewId === 'mapContainer') {
-        document.getElementById('nav-map').classList.add('active');
-        setTimeout(() => map.invalidateSize(), 100);
-    }
-    if(viewId === 'sidebarRight') document.getElementById('nav-detail').classList.add('active');
-}
-
-function closeDetail() { 
-    if(window.innerWidth < 1024) changeView('sidebarLeft');
-    else document.getElementById('sidebarRight').style.display = 'none';
-}
 
 // --- MAPA ---
 function initMap() {
     if(map) return;
     map = L.map('map', { zoomControl: false }).setView([-34.75, -56.0], 10);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    L.control.zoom({ position: 'topright' }).addTo(map);
+
+    document.getElementById('legendFallas').innerHTML = Object.entries(FALLA_TYPES).map(([n, c]) => `
+        <div class="legend-item"><span class="legend-color" style="background:${c}"></span>${n}</div>
+    `).join('');
 }
 
-function renderMarkers() {
-    markers.forEach(m => map.removeLayer(m)); markers = [];
-    const bounds = [];
-    filteredData.forEach(d => {
-        if(!isNaN(d.lat)) {
-            const m = L.circleMarker([d.lat, d.lng], { radius: 8, fillColor: d.cat.c, color: '#fff', weight: 1, fillOpacity: 0.9 }).addTo(map);
-            m.on('click', () => selectAsset(d.id));
-            markers.push(m);
-            bounds.push([d.lat, d.lng]);
-        }
-    });
-    if(bounds.length > 0) map.fitBounds(bounds, { padding: [30, 30] });
-}
-
-// --- PROCESAMIENTO DE DATOS ---
+// --- DATOS ---
 function handleFile(e) {
     const file = e.target.files[0];
     if(!file) return;
@@ -322,6 +282,7 @@ function handleFile(e) {
             const m = obj.msg.toLowerCase();
             if(m.includes('energía')) obj.cat = { n: 'Sin energía', c: '#ef4444' };
             else if(m.includes('accesible')) obj.cat = { n: 'OLC inaccesible', c: '#f97316' };
+            else if(m.includes('dañado')) obj.cat = { n: 'Equipo dañado', c: '#dc2626' };
             else if(m.includes('gps')) obj.cat = { n: 'GPS roto', c: '#eab308' };
             else obj.cat = { n: 'Otros', c: '#64748b' };
             allData.push(obj);
@@ -329,7 +290,7 @@ function handleFile(e) {
         filteredData = [...allData];
         populateFilters();
         applyFilters();
-        showToast("PLANILLA CARGADA ✅");
+        showToast("CSV CARGADO ✅");
     };
     r.readAsText(file);
 }
@@ -353,20 +314,37 @@ function applyFilters() {
 
     document.getElementById('statTotal').innerText = filteredData.length;
     document.getElementById('statNoEnergy').innerText = filteredData.filter(x => x.cat.n === 'Sin energía').length;
+    
     renderMarkers();
     renderList();
+    updateSitLegend();
+}
+
+function renderMarkers() {
+    if(!map) return;
+    markers.forEach(m => map.removeLayer(m)); markers = [];
+    const bounds = [];
+    filteredData.forEach(d => {
+        if(!isNaN(d.lat)) {
+            const m = L.circleMarker([d.lat, d.lng], { radius: 7, fillColor: d.cat.c, color: '#fff', weight: 1, fillOpacity: 0.9 }).addTo(map);
+            m.on('click', () => selectAsset(d.id));
+            markers.push(m);
+            bounds.push([d.lat, d.lng]);
+        }
+    });
+    if(bounds.length > 0) map.fitBounds(bounds, { padding: [30, 30] });
 }
 
 function renderList() {
     const c = document.getElementById('errorList');
     c.innerHTML = filteredData.slice(0, 100).map(d => `
-        <div class="p-4 bg-slate-800 rounded-2xl border border-slate-700 shadow-lg mb-2 error-item" onclick="selectAsset('${d.id}')">
-            <div class="flex justify-between items-start mb-2">
-                <span class="text-[9px] font-bold text-blue-400 uppercase bg-blue-400/10 px-2 py-0.5 rounded-full">${d.loc}</span>
-                <span class="text-[9px] text-slate-500">${d.date.split(' ')[0]}</span>
+        <div class="p-4 bg-slate-800/60 rounded-xl mb-2 error-item" onclick="selectAsset('${d.id}')">
+            <div class="flex justify-between items-start text-[9px] mb-1">
+                <span class="text-blue-400 font-bold uppercase">${d.loc}</span>
+                <span class="text-slate-500">${d.date.split(' ')[0]}</span>
             </div>
             <div class="text-sm font-bold text-white">${d.ext}</div>
-            <div class="text-[10px] mt-1" style="color:${d.cat.c}">${d.cat.n}</div>
+            <div class="text-[9px]" style="color:${d.cat.c}">${d.cat.n}</div>
         </div>
     `).join('');
 }
@@ -374,38 +352,29 @@ function renderList() {
 function selectAsset(id) {
     const d = allData.find(x => x.id === id);
     if(!d) return;
-    
-    const content = `
-        <div class="bg-slate-800 p-5 rounded-3xl border border-slate-700 space-y-5 shadow-2xl">
-            <div class="bg-blue-600/10 p-4 rounded-2xl border border-blue-600/20">
-                <div class="text-[10px] text-blue-400 font-bold uppercase mb-1">Activo / ID</div>
-                <div class="text-xl font-black text-white">${d.ext}</div>
+    document.getElementById('detailContent').innerHTML = `
+        <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 space-y-4 shadow-xl">
+            <div class="bg-blue-600/10 p-3 rounded-xl border border-blue-600/20">
+                <div class="text-[9px] text-blue-400 uppercase font-bold">Activo</div>
+                <div class="text-lg font-black">${d.ext}</div>
             </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-slate-900/50 p-3 rounded-xl">
-                    <div class="text-[9px] text-slate-500 uppercase font-bold">Municipio</div>
-                    <div class="text-xs text-white">${d.loc}</div>
-                </div>
-                <div class="bg-slate-900/50 p-3 rounded-xl">
-                    <div class="text-[9px] text-slate-500 uppercase font-bold">Zona</div>
-                    <div class="text-xs text-white">${d.zona}</div>
-                </div>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <div><div class="text-slate-500 font-bold">MUNICIPIO</div><div>${d.loc}</div></div>
+                <div><div class="text-slate-500 font-bold">ZONA</div><div>${d.zona}</div></div>
             </div>
-            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
-                <div class="text-[9px] text-slate-500 uppercase font-bold mb-1">Situación Actual</div>
-                <div class="text-lime-400 font-black uppercase text-sm">${d.sit}</div>
-                <div class="text-[9px] text-slate-400 mt-2 font-mono">Cuenta: ${d.cue}</div>
+            <div class="bg-lime-500/10 p-3 rounded-lg border border-lime-500/20">
+                <div class="text-[9px] text-lime-500 font-bold">SITUACIÓN</div>
+                <div class="text-xs font-black text-lime-400 uppercase">${d.sit}</div>
             </div>
-            <div class="p-4 rounded-xl" style="background:${d.cat.c}15; border:1px solid ${d.cat.c}30">
-                <div class="text-[9px] uppercase font-bold" style="color:${d.cat.c}">Falla</div>
-                <div class="font-bold text-white">${d.cat.n}</div>
+            <div class="p-3 rounded-lg" style="background:${d.cat.c}10">
+                <div class="text-[9px] font-bold" style="color:${d.cat.c}">FALLA</div>
+                <div class="text-xs font-bold">${d.cat.n}</div>
+                <div class="text-[10px] text-slate-400 italic mt-1 leading-tight">${d.msg}</div>
             </div>
-            <button onclick="irAMapa(${d.lat}, ${d.lng})" class="w-full bg-blue-600 p-4 rounded-2xl font-bold shadow-xl">VER EN MAPA 📍</button>
+            <div class="text-[9px] font-mono text-slate-500">Cuenta: ${d.cue}</div>
+            <button onclick="irAMapa(${d.lat}, ${d.lng})" class="w-full bg-blue-600 p-3 rounded-xl font-bold uppercase text-xs">Ver en Mapa</button>
         </div>
     `;
-
-    document.getElementById('detailContent').innerHTML = content;
-    
     if(window.innerWidth < 1024) changeView('sidebarRight');
     else document.getElementById('sidebarRight').style.display = 'flex';
 }
@@ -415,70 +384,68 @@ function irAMapa(lat, lng) {
     setTimeout(() => map.flyTo([lat, lng], 18), 300);
 }
 
+// --- RESPONSIVE LOGIC ---
+function changeView(viewId) {
+    document.querySelectorAll('.sidebar-left, .sidebar-right, #map-container').forEach(v => v.classList.remove('view-active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(viewId).classList.add('view-active');
+    if(viewId==='sidebarLeft') document.getElementById('nav-list').classList.add('active');
+    if(viewId==='mapContainer') { document.getElementById('nav-map').classList.add('active'); setTimeout(()=>map.invalidateSize(), 200); }
+    if(viewId==='sidebarRight') document.getElementById('nav-detail').classList.add('active');
+}
+function closeDetail() { if(window.innerWidth < 1024) changeView('sidebarLeft'); else document.getElementById('sidebarRight').style.display='none'; }
+
 // --- HELPERS ---
 function toggleModal(id) { 
     const m = document.getElementById(id);
     m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
-    if(id === 'statsModal') updateStats();
+    if(id==='statsModal') updateStats();
 }
-
 function populateFilters() {
     const getU = (f) => [...new Set(allData.map(d => d[f]))].filter(x => x && x !== '-').sort();
-    const fill = (id, list, label) => {
-        const sel = document.getElementById(id);
-        sel.innerHTML = `<option value="all">${label}</option>` + list.map(x => `<option value="${x}">${x}</option>`).join('');
-    };
+    const fill = (id, list, lbl) => document.getElementById(id).innerHTML = `<option value="all">${lbl}</option>` + list.map(x => `<option value="${x}">${x}</option>`).join('');
     fill('localidadFilter', getU('loc'), 'MUNICIPIOS');
     fill('zonaFilter', getU('zona'), 'ZONAS');
     fill('tipoFallaFilter', [...new Set(allData.map(d => d.cat.n))].sort(), 'FALLAS');
     fill('situacionFilter', getU('sit'), 'SITUACIONES');
     fill('cuentaFilter', getU('cue'), 'CUENTAS');
 }
-
-function renderUserTable() {
-    document.getElementById('userListTable').innerHTML = users.map(u => `
-        <tr class="border-b border-slate-800">
-            <td class="py-2">${u.name}</td>
-            <td class="text-blue-400 text-[10px] uppercase font-bold">${u.role}</td>
-            <td class="text-right"><button onclick="delU('${u.name}')" class="text-red-500">Borrar</button></td>
-        </tr>
+function updateSitLegend() {
+    const cnts = {}; filteredData.forEach(d => cnts[d.sit] = (cnts[d.sit] || 0) + 1);
+    document.getElementById('legendSituaciones').innerHTML = Object.entries(cnts).sort((a,b)=>b[1]-a[1]).map(([s, c]) => `
+        <div class="legend-item"><span class="legend-dot-sit"></span><span class="flex-1">${s}</span><span class="font-bold">${c}</span></div>
     `).join('');
 }
-
+function renderUserTable() {
+    document.getElementById('userListTable').innerHTML = users.map(u => `<tr><td>${u.name}</td><td>${u.role}</td><td><button onclick="delU('${u.name}')" class="text-red-500">❌</button></td></tr>`).join('');
+}
 function addUser() {
     const n = document.getElementById('newU').value.trim();
     const p = document.getElementById('newP').value.trim();
-    if(!n || !p) return;
-    users.push({ name: n, pass: p, role: 'user' });
-    localStorage.setItem('imc_users', JSON.stringify(users));
-    renderUserTable();
-    document.getElementById('newU').value=''; document.getElementById('newP').value='';
+    if(n&&p) { users.push({name:n, pass:p, role:'user'}); localStorage.setItem('imc_users', JSON.stringify(users)); renderUserTable(); }
 }
-
-function delU(n) { if(n==='admin') return; users=users.filter(x=>x.name!==n); localStorage.setItem('imc_users', JSON.stringify(users)); renderUserTable(); }
+function delU(n) { if(n!=='admin'){ users=users.filter(x=>x.name!==n); localStorage.setItem('imc_users', JSON.stringify(users)); renderUserTable(); } }
 
 function exportToPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('l');
-    doc.text("REPORTE DE FALLAS ALUMBRADO IMC", 14, 15);
+    doc.text("FALLAS ALUMBRADO IMC", 14, 15);
     const rows = filteredData.map((d, i) => [i+1, d.ext, d.loc, d.cat.n, d.sit, d.cue]);
-    doc.autoTable({ head: [['#', 'ID', 'Municipio', 'Falla', 'Situación', 'Cuenta']], body: rows, startY: 20, styles: {fontSize:7} });
-    doc.save("Reporte_Fallas.pdf");
+    doc.autoTable({ head:[['#','ID','Mun','Falla','Sit','Cuenta']], body:rows, startY:20, styles:{fontSize:7}});
+    doc.save("Reporte_IMC.pdf");
 }
 
 function updateStats() {
     const mun = {}; filteredData.forEach(d => mun[d.loc] = (mun[d.loc] || 0) + 1);
-    document.getElementById('munStatsTable').innerHTML = Object.entries(mun).sort((a,b)=>b[1]-a[1]).map(([l, c]) => `
-        <tr class="border-b border-slate-800"><td class="py-2">${l}</td><td class="text-right font-bold text-blue-400">${c}</td></tr>
-    `).join('');
+    document.getElementById('statsHead').innerHTML = `<tr><th>Municipio</th><th>Cantidad</th></tr>`;
+    document.getElementById('munStatsTable').innerHTML = Object.entries(mun).sort((a,b)=>b[1]-a[1]).map(([l, c]) => `<tr><td>${l}</td><td class="text-blue-400 font-bold">${c}</td></tr>`).join('');
+    
+    const cue = {}; filteredData.forEach(d => { if(d.cue!=='-') cue[d.cue] = (cue[d.cue] || 0) + 1; });
+    document.getElementById('groupedCuentasTable').innerHTML = Object.entries(cue).sort((a,b)=>b[1]-a[1]).slice(0,20).map(([n, c]) => `<tr><td>${n}</td><td>${c}</td><td><button onclick="verCue('${n}')" class="text-blue-500">Ver</button></td></tr>`).join('');
 }
+function verCue(n) { const pts = filteredData.filter(d=>d.cue===n); toggleModal('statsModal'); map.fitBounds(pts.map(p=>[p.lat, p.lng]), {padding:[50,50]}); }
+function showToast(m) { const t = document.createElement('div'); t.className='toast'; t.innerText=m; document.body.appendChild(t); setTimeout(()=>t.remove(), 3000); }
 
-function showToast(m) {
-    const t = document.createElement('div'); t.className='toast'; t.innerText=m;
-    document.getElementById('toastContainer').appendChild(t); setTimeout(()=>t.remove(), 3000);
-}
-
-// Listeners
 document.getElementById('searchInput').addEventListener('input', applyFilters);
 document.getElementById('localidadFilter').addEventListener('change', applyFilters);
 document.getElementById('zonaFilter').addEventListener('change', applyFilters);
@@ -486,10 +453,7 @@ document.getElementById('tipoFallaFilter').addEventListener('change', applyFilte
 document.getElementById('situacionFilter').addEventListener('change', applyFilters);
 document.getElementById('cuentaFilter').addEventListener('change', applyFilters);
 
-window.onload = () => { 
-    const s = sessionStorage.getItem('imc_logged'); 
-    if(s) enterApp(JSON.parse(s)); 
-};
+window.onload = () => { const s = sessionStorage.getItem('imc_session'); if(s) enterApp(JSON.parse(s)); };
 </script>
 </body>
 </html>
